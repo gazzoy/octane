@@ -6,10 +6,12 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Laravel\Octane\RoadRunner\ServerProcessInspector;
 use Laravel\Octane\RoadRunner\ServerStateFile;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
+#[AsCommand(name: 'octane:roadrunner')]
 class StartRoadRunnerCommand extends Command implements SignalableCommandInterface
 {
     use Concerns\InstallsRoadRunnerDependencies,
@@ -61,6 +63,8 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
         }
 
         $roadRunnerBinary = $this->ensureRoadRunnerBinaryIsInstalled();
+
+        $this->ensurePortIsAvailable();
 
         if ($inspector->serverIsRunning()) {
             $this->error('RoadRunner server is already running.');
@@ -252,6 +256,10 @@ class StartRoadRunnerCommand extends Command implements SignalableCommandInterfa
 
         if (Str::endsWith($elapsed, 'µs')) {
             return mb_substr($elapsed, 0, -2) * 0.001;
+        }
+
+        if (filter_var($elapsed, FILTER_VALIDATE_INT) !== false) {
+            return $elapsed;
         }
 
         return (float) $elapsed * 1000;

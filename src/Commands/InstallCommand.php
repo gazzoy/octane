@@ -5,8 +5,10 @@ namespace Laravel\Octane\Commands;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Laravel\Octane\Swoole\SwooleExtension;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Throwable;
 
+#[AsCommand(name: 'octane:install')]
 class InstallCommand extends Command
 {
     use Concerns\InstallsFrankenPhpDependencies,
@@ -126,7 +128,10 @@ class InstallCommand extends Command
      */
     public function installFrankenPhpServer()
     {
-        if (! $this->confirm("FrankenPHP's Octane integration is in beta and should be used with caution in production. Do you wish to continue?")) {
+        if ($this->option('no-interaction')) {
+            $this->info("FrankenPHP's Octane integration is in beta and should be used with caution in production.");
+            $this->newLine();
+        } elseif (! $this->confirm("FrankenPHP's Octane integration is in beta and should be used with caution in production. Do you wish to continue?", true)) {
             return false;
         }
 

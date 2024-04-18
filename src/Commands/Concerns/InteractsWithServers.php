@@ -145,17 +145,35 @@ trait InteractsWithServers
     }
 
     /**
+     * Ensure the Octane HTTP server port is available.
+     */
+    protected function ensurePortIsAvailable(): void
+    {
+        $host = $this->getHost();
+
+        $port = $this->getPort();
+
+        $connection = @fsockopen($host, $port);
+
+        if (is_resource($connection)) {
+            @fclose($connection);
+
+            throw new InvalidArgumentException("Unable to start server. Port {$port} is already in use.");
+        }
+    }
+
+    /**
      * Returns the list of signals to subscribe.
      */
     public function getSubscribedSignals(): array
     {
-        return [SIGINT, SIGTERM];
+        return [SIGINT, SIGTERM, SIGHUP];
     }
 
     /**
      * The method will be called when the application is signaled.
      */
-    public function handleSignal(int $signal): void
+    public function handleSignal(int $signal, int|false $previousExitCode = 0): int|false
     {
         $this->stopServer();
 

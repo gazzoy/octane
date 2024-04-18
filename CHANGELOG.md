@@ -1,6 +1,52 @@
 # Release Notes
 
-## [Unreleased](https://github.com/laravel/octane/compare/v2.2.6...2.x)
+## [Unreleased](https://github.com/laravel/octane/compare/v2.3.7...2.x)
+
+## [v2.3.7](https://github.com/laravel/octane/compare/v2.3.6...v2.3.7) - 2024-04-01
+
+* Display correct elapsed time with Roadrunner by [@Joel-Jensen](https://github.com/Joel-Jensen) in https://github.com/laravel/octane/pull/865
+* Fix #851: When docker stop container, db connections still persists by [@Focusnik](https://github.com/Focusnik) in https://github.com/laravel/octane/pull/853
+* fix: config watch list database dir; by [@olexoliinyk0](https://github.com/olexoliinyk0) in https://github.com/laravel/octane/pull/867
+
+## [v2.3.6](https://github.com/laravel/octane/compare/v2.3.5...v2.3.6) - 2024-03-26
+
+* [2.x] Make commands lazy by [@timacdonald](https://github.com/timacdonald) in https://github.com/laravel/octane/pull/857
+* [2.x] Fixes Swoole `PUT|PATCH|DELETE` requests on Laravel 11 by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/octane/pull/862
+* [2.x] Closes monolog handlers by event listener if the worker stops by [@NiroDeveloper](https://github.com/NiroDeveloper) in https://github.com/laravel/octane/pull/854
+* Fix undefined array key "assets" by [@sy-records](https://github.com/sy-records) in https://github.com/laravel/octane/pull/864
+* Ensure HTTP server port is available by [@smortexa](https://github.com/smortexa) in https://github.com/laravel/octane/pull/852
+
+## [v2.3.5](https://github.com/laravel/octane/compare/v2.3.4...v2.3.5) - 2024-03-08
+
+* [2.x] Ignores `storage clean stamps will be incomplete` by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/octane/pull/848
+
+## [v2.3.4](https://github.com/laravel/octane/compare/v2.3.3...v2.3.4) - 2024-02-23
+
+* fix swoole file streaming by [@L3o-pold](https://github.com/L3o-pold) in https://github.com/laravel/octane/pull/842
+
+## [v2.3.3](https://github.com/laravel/octane/compare/v2.3.2...v2.3.3) - 2024-02-04
+
+* Update InstallCommand.php by [@brunograndecom](https://github.com/brunograndecom) in https://github.com/laravel/octane/pull/830
+
+## [v2.3.2](https://github.com/laravel/octane/compare/v2.3.1...v2.3.2) - 2024-01-30
+
+* Carbon v3 by [@driesvints](https://github.com/driesvints) in https://github.com/laravel/octane/pull/825
+
+## [v2.3.1](https://github.com/laravel/octane/compare/v2.3.0...v2.3.1) - 2024-01-20
+
+* [2.x] Flushes `Once::class` on Operation Terminated by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/octane/pull/821
+* Fix Swoole in-memory table size by [@miguilimzero](https://github.com/miguilimzero) in https://github.com/laravel/octane/pull/818
+
+## [v2.3.0](https://github.com/laravel/octane/compare/v2.2.7...v2.3.0) - 2024-01-16
+
+* [2.x] Laravel v11 support by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/octane/pull/812
+* FrankenPHP: Remove unnecessary use statement to fix PHP warning by [@philbates35](https://github.com/philbates35) in https://github.com/laravel/octane/pull/813
+* feat(frankenphp): make HTTP to HTTPS redirection opt-in by [@dunglas](https://github.com/dunglas) in https://github.com/laravel/octane/pull/814
+
+## [v2.2.7](https://github.com/laravel/octane/compare/v2.2.6...v2.2.7) - 2024-01-08
+
+* [2.x] Fix missing array key issue with FrankenPHP by [@driesvints](https://github.com/driesvints) in https://github.com/laravel/octane/pull/806
+* [2.x] Ensure URL defaults are flushed by [@nunomaduro](https://github.com/nunomaduro) in https://github.com/laravel/octane/pull/807
 
 ## [v2.2.6](https://github.com/laravel/octane/compare/v2.2.5...v2.2.6) - 2023-12-26
 

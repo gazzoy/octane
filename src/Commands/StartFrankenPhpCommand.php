@@ -6,9 +6,11 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Laravel\Octane\FrankenPhp\ServerProcessInspector;
 use Laravel\Octane\FrankenPhp\ServerStateFile;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\SignalableCommandInterface;
 use Symfony\Component\Process\Process;
 
+#[AsCommand(name: 'octane:frankenphp')]
 class StartFrankenPhpCommand extends Command implements SignalableCommandInterface
 {
     use Concerns\InstallsFrankenPhpDependencies,
@@ -30,6 +32,7 @@ class StartFrankenPhpCommand extends Command implements SignalableCommandInterfa
                     {--max-requests=500 : The number of requests to process before reloading the server}
                     {--caddyfile= : The path to the FrankenPHP Caddyfile file}
                     {--https : Enable HTTPS, HTTP/2, and HTTP/3, and automatically generate and renew certificates}
+                    {--http-redirect : Enable HTTP to HTTPS redirection (only enabled if --https is passed)}
                     {--watch : Automatically reload the server when the application is modified}
                     {--poll : Use file system polling while watching in order to watch files over a network}
                     {--log-level= : Log messages at or above the specified log level}';
@@ -56,7 +59,7 @@ class StartFrankenPhpCommand extends Command implements SignalableCommandInterfa
     public function handle(ServerProcessInspector $inspector, ServerStateFile $serverStateFile)
     {
         $this->ensureFrankenPhpWorkerIsInstalled();
-        $this->ensureHostsAreAvailable();
+        $this->ensurePortIsAvailable();
 
         $frankenphpBinary = $this->ensureFrankenPhpBinaryIsInstalled();
 
@@ -75,7 +78,9 @@ class StartFrankenPhpCommand extends Command implements SignalableCommandInterfa
         $host = $this->option('host');
         $port = $this->getPort();
 
-        $serverName = $this->option('https')
+        $https = $this->option('https');
+
+        $serverName = $https
             ? "https://$host:$port"
             : "http://:$port";
 
@@ -90,6 +95,7 @@ class StartFrankenPhpCommand extends Command implements SignalableCommandInterfa
             'LARAVEL_OCTANE' => 1,
             'MAX_REQUESTS' => $this->option('max-requests'),
             'REQUEST_MAX_EXECUTION_TIME' => $this->maxExecutionTime(),
+            'CADDY_GLOBAL_OPTIONS' => ($https && $this->option('http-redirect')) ? '' : 'auto_https disable_redirects',
             'CADDY_SERVER_ADMIN_PORT' => $this->adminPort(),
             'CADDY_SERVER_LOG_LEVEL' => $this->option('log-level') ?: (app()->environment('local') ? 'INFO' : 'WARN'),
             'CADDY_SERVER_LOGGER' => 'json',
@@ -110,7 +116,7 @@ class StartFrankenPhpCommand extends Command implements SignalableCommandInterfa
      *
      * @return void
      */
-    protected function ensureHostsAreAvailable()
+    protected function ensurePortIsAvailable()
     {
         $host = $this->getHost();
 
@@ -268,11 +274,13 @@ class StartFrankenPhpCommand extends Command implements SignalableCommandInterfa
                 return $this->info($output);
             }
 
-            if (is_array($stream = json_decode($debug['msg'], true))) {
+            $message = $debug['msg'] ?? 'unknown error';
+
+            if (is_array($stream = json_decode($message, true))) {
                 return $this->handleStream($stream);
             }
 
-            if ($debug['msg'] == 'handled request') {
+            if ($message == 'handled request') {
                 if (! $this->laravel->isLocal()) {
                     return;
                 }
@@ -300,7 +308,7 @@ class StartFrankenPhpCommand extends Command implements SignalableCommandInterfa
             }
 
             if ($debug['level'] === 'warn') {
-                return $this->warn($debug['msg']);
+                return $this->warn($message);
             }
 
             if ($debug['level'] !== 'info') {
@@ -309,7 +317,7 @@ class StartFrankenPhpCommand extends Command implements SignalableCommandInterfa
                     return;
                 }
 
-                return $this->error($debug['msg']);
+                return $this->error($message);
             }
         });
     }
